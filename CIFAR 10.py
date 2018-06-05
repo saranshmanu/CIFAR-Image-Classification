@@ -46,7 +46,7 @@ print(test_labels.shape)
 
 # In order to check where the data shows an image correctly
 plt.imshow(train_data[4])
-# plt.show()
+plt.show()
 
 from keras.models import Sequential
 from keras.layers import Conv2D
@@ -60,11 +60,22 @@ from keras.optimizers import SGD
 # Create the model
 model = Sequential()
 model.add(Conv2D(32, (3, 3), input_shape=(32, 32, 3), padding='same', activation='relu', kernel_constraint=maxnorm(3)))
+model.add(Conv2D(32, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+model.add(Conv2D(62, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
+model.add(Conv2D(62, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
+model.add(Conv2D(62, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.2))
 model.add(Conv2D(32, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
+model.add(Conv2D(16, (3, 3), activation='relu', padding='same', kernel_constraint=maxnorm(3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
+model.add(Dense(1024, activation='relu', kernel_constraint=maxnorm(3)))
+model.add(Dense(100, activation='relu', kernel_constraint=maxnorm(3)))
 model.add(Dropout(0.5))
 model.add(Dense(10, activation='softmax'))
 
@@ -83,9 +94,8 @@ train_data = train_data / 255.0
 test_data = test_data / 255.0
 
 # Fit the model
-model.fit(train_data, train_labels, validation_data=(test_data, test_labels), epochs=1000, batch_size=32)
+model.fit(train_data, train_labels, validation_data=(test_data, test_labels), epochs=10, batch_size=10000)
 # Final evaluation of the model
 scores = model.evaluate(test_data, test_labels, verbose=0)
 print("Accuracy: %.2f%%" % (scores[1]*100))
-
 model.save('my_model.h5')
